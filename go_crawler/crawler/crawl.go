@@ -13,7 +13,11 @@ import (
 
 func Crawl(url string) ([]byte, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "https://book.douban.com", nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		panic(err)
+	}
+
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
 
 	resp, err := client.Do(req)
