@@ -6,49 +6,40 @@ import (
 )
 
 type Schedular interface {
-	Submit(Request)
-	configureWorkChan(chan Request)
-}
-
-type SimpleSchedular struct {
-	workerChan chan Request
-}
-
-func (s *SimpleSchedular) Submit(r Request) {
-	go func() {
-		s.workerChan <- r
-	}()
-}
-
-func (s *SimpleSchedular) configureWorkChan(c chan Request) {
-	s.workerChan = c
+	Submit(request Request)
+	Run()
+	WorkReady(chan Request)
+	Workchan() chan Request
 }
 
 type ConcurrentEngine struct {
 	Scheduler Schedular
 	WorkCount int
+	ItemChan  chan interface{}
 }
 
 func (e ConcurrentEngine) Run(seeds ...Request) {
-	in := make(chan Request)
 	out := make(chan ParseResult)
 
-	e.Scheduler.configureWorkChan(in)
+	e.Scheduler.Run()
 
 	for i := 0; i < e.WorkCount; i++ {
-		CreateWork(in, out)
+		CreateWork(e.Scheduler.Workchan(), out, e.Scheduler)
 	}
 
 	for _, r := range seeds {
 		e.Scheduler.Submit(r)
 	}
-	itemcount := 0
+	//itemcount := 0
 	for {
 		result := <-out
 
 		for _, item := range result.Items {
-			log.Printf("Got Itme: %d, %v", itemcount, item)
-			itemcount++
+			go func() {
+				e.ItemChan <- item
+			}()
+			//log.Printf("Got Itme: %d, %v", itemcount, item)
+			//itemcount++
 		}
 
 		for _, request := range result.Requests {
@@ -57,9 +48,10 @@ func (e ConcurrentEngine) Run(seeds ...Request) {
 	}
 }
 
-func CreateWork(in chan Request, out chan ParseResult) {
+func CreateWork(in chan Request, out chan ParseResult, s Schedular) {
 	go func() {
 		for {
+			s.WorkReady(in)
 			request := <-in
 
 			result, err := worker(request)
@@ -76,7 +68,7 @@ func CreateWork(in chan Request, out chan ParseResult) {
 func worker(r Request) (ParseResult, error) {
 	log.Printf("Crawl url: %s\n", r.Url)
 
-	body, err := crawler.Crawl(r.Url)
+	body, err := crawler.ProxyCrawl(r.Url)
 
 	if err != nil {
 		log.Printf("Crawl Error: %s\n", r.Url)
