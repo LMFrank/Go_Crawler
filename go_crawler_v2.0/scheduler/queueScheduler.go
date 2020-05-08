@@ -1,25 +1,25 @@
-package schedular
+package scheduler
 
 import "go_crawler/engine"
 
-type QueueSchedular struct {
+type QueueScheduler struct {
 	requestChan chan engine.Request
 	workerChan  chan chan engine.Request
 }
 
-func (s *QueueSchedular) Workchan() chan engine.Request {
+func (s *QueueScheduler) Workchan() chan engine.Request {
 	return make(chan engine.Request)
 }
 
-func (s *QueueSchedular) Submit(r engine.Request) {
+func (s *QueueScheduler) Submit(r engine.Request) {
 	s.requestChan <- r
 }
 
-func (s *QueueSchedular) WorkReady(w chan engine.Request) {
+func (s *QueueScheduler) WorkReady(w chan engine.Request) {
 	s.workerChan <- w
 }
 
-func (s *QueueSchedular) Run() {
+func (s *QueueScheduler) Run() {
 	s.workerChan = make(chan chan engine.Request)
 	s.requestChan = make(chan engine.Request)
 	go func() {

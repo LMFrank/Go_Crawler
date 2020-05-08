@@ -3,21 +3,24 @@ package main
 import (
 	"go_crawler/db"
 	"go_crawler/engine"
-	"go_crawler/parse"
-	"go_crawler/schedular"
+	"go_crawler/parse/zhengai"
+	"go_crawler/scheduler"
 )
 
 func main() {
+	itemsave, err := db.SaveItem()
+	if err != nil {
+		panic(err)
+	}
 
 	e := engine.ConcurrentEngine{
-		Scheduler: &schedular.QueueSchedular{},
-		//Scheduler: &schedular.SimpleSchedular{},
+		Scheduler: &scheduler.QueueScheduler{},
 		WorkCount: 100,
-		ItemChan:  db.SaveItem(),
+		ItemChan:  itemsave,
 	}
 	e.Run(engine.Request{
-		Url:       "https://book.douban.com",
-		ParseFunc: parse.ParseTag,
+		Url:   "http://www.zhenai.com/zhenghun",
+		Parse: zhengai.ParseCity,
 	})
 
 }

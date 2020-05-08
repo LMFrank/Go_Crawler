@@ -12,10 +12,13 @@ type Schedular interface {
 	Workchan() chan Request
 }
 
+type Processor func(Request) (ParseResult, error)
+
 type ConcurrentEngine struct {
-	Scheduler Schedular
-	WorkCount int
-	ItemChan  chan interface{}
+	Scheduler        Schedular
+	WorkCount        int
+	ItemChan         chan Item
+	RequestProcessor Processor
 }
 
 func (e ConcurrentEngine) Run(seeds ...Request) {
@@ -75,5 +78,5 @@ func worker(r Request) (ParseResult, error) {
 		return ParseResult{}, err
 	}
 
-	return r.ParseFunc(body), nil
+	return r.Parse.Parse(body, r.Url), nil
 }
