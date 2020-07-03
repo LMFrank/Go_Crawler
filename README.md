@@ -23,5 +23,9 @@ Python爬虫项目地址：[ https://github.com/LMFrank/CrawlerProject ]( https:
 
 在v1.0的版本上改造了并发结构，尝试拆分为微服务，使用内置的rpc进行通信
 
+### Zhenai_cralwer
 
+包含了Go_crawler_v2.0中的珍爱网爬虫项目，在本项目中调整了部分代码，v1.0为单任务版，v2.0为分布式爬虫
+
+具体请查看：[README](https://github.com/LMFrank/Go_Crawler/tree/master/zhenai_crawler)
 
