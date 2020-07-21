@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"cralwer/fetcher"
+	"cralwer_v1.0/fetcher"
 	"log"
 )
 

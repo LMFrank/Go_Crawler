@@ -1,4 +1,4 @@
-module cralwer_v1.0
+module cralwer_v2.0
 
 go 1.14
 

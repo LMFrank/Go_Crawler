@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"cralwer_v1.0/engine"
-	"cralwer_v1.0/model"
+	"cralwer_v2.0/engine"
+	"cralwer_v2.0/model"
 	"regexp"
 	"strconv"
 )
