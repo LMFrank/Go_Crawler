@@ -13,5 +13,5 @@ type Profile struct {
 }
 
 func (p Profile) String() string {
-	return p.Name + " " + p.Marry + strconv.Itoa(p.Age) + "olds " + strconv.Itoa(p.Height) + "cm " + strconv.Itoa(p.Weight) + "kg "
+	return p.Name + " " + p.Marry + " " + strconv.Itoa(p.Age) + "岁 " + strconv.Itoa(p.Height) + "cm " + strconv.Itoa(p.Weight) + "kg "
 }

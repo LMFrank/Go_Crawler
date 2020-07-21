@@ -11,13 +11,14 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // 100毫秒执行一次请求
-//var rateLimiter = time.Tick(50 * time.Millisecond)
+var rateLimiter = time.Tick(100 * time.Millisecond)
 
 func Fetch(url string) ([]byte, error) {
-	//<-rateLimiter
+	<-rateLimiter
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
