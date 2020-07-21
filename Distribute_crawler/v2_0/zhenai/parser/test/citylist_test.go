@@ -1,7 +1,7 @@
 package test
 
 import (
-	"cralwer_v1.0/zhenai/parser"
+	"crawler_v2.0/zhenai/parser"
 	"fmt"
 	"io/ioutil"
 	"testing"

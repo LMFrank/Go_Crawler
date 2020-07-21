@@ -1,6 +1,6 @@
 package schedular
 
-import "cralwer_v2.0/engine"
+import "crawler_v2.0/engine"
 
 type SimpleSchedular struct {
 	workerChan chan engine.Request
