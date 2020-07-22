@@ -15,7 +15,7 @@ import (
 )
 
 // 100毫秒执行一次请求
-var rateLimiter = time.Tick(1 * time.Millisecond)
+var rateLimiter = time.Tick(100 * time.Millisecond)
 
 func Fetch(url string) ([]byte, error) {
 	<-rateLimiter
@@ -47,8 +47,8 @@ func Fetch(url string) ([]byte, error) {
 }
 
 // 代理模式
-func ProxyCrawl(weburl string) ([]byte, error) {
-	//<-ratelimit
+func ProxyFetch(weburl string) ([]byte, error) {
+	<-rateLimiter
 
 	proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse("http://127.0.0.1:7890")

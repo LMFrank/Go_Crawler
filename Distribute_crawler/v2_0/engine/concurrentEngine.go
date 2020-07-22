@@ -8,32 +8,39 @@ import (
 type ConcurrentEngine struct {
 	Schedular   Schedular
 	WorkerCount int
+	ItemChan    chan interface{}
 }
 
 type Schedular interface {
+	ReadyNotifier
 	Submit(Request)
-	ConfigureMasterWorkerChan(chan Request)
+	WorkerChan() chan Request
+	Run()
+}
+
+type ReadyNotifier interface {
+	WorkerReady(chan Request)
 }
 
 func (e *ConcurrentEngine) Run(seeds ...Request) {
-	in := make(chan Request)
 	out := make(chan ParseResult)
-	e.Schedular.ConfigureMasterWorkerChan(in)
+	e.Schedular.Run()
 
 	for i := 0; i < e.WorkerCount; i++ {
-		createWorker(in, out)
+		createWorker(e.Schedular.WorkerChan(), out, e.Schedular)
 	}
 
 	for _, r := range seeds {
 		e.Schedular.Submit(r)
 	}
 
-	itemCount := 0
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			log.Printf("Got item #%d: %v", itemCount, item)
-			itemCount++
+			item := item
+			go func() {
+				e.ItemChan <- item
+			}()
 		}
 
 		for _, request := range result.Requests {
@@ -42,9 +49,10 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 }
 
-func createWorker(in chan Request, out chan ParseResult) {
+func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 	go func() {
 		for {
+			ready.WorkerReady(in)
 			request := <-in
 			result, err := worker(request)
 			if err != nil {
@@ -57,7 +65,7 @@ func createWorker(in chan Request, out chan ParseResult) {
 
 func worker(r Request) (ParseResult, error) {
 	log.Printf("Fetching %s", r.Url)
-	body, err := fetcher.Fetch(r.Url)
+	body, err := fetcher.ProxyFetch(r.Url)
 	if err != nil {
 		log.Printf("Fetcher: error "+"fetching url %s: %v", r.Url, err)
 		return ParseResult{}, err
