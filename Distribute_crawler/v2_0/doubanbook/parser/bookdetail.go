@@ -5,10 +5,11 @@ import (
 	"crawler_v2.0/model"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
-	autherRe = regexp.MustCompile(`<span class="pl"> 作者</span>:[\d\D]*?<a.*?>([^<]+)</a>`)
+	autherRe = regexp.MustCompile(`<span class="pl">作者:</span>[\d\D]*?<a.*?>([^<]+)</a>`)
 	pressRe  = regexp.MustCompile(`<span class="pl">出版社:</span>([^<]+)<br/>`)
 	pagesRe  = regexp.MustCompile(`<span class="pl">页数:</span> ([^<]+)<br/>`)
 	priceRe  = regexp.MustCompile(`<span class="pl">定价:</span>([^<]+)<br/>`)
@@ -17,21 +18,24 @@ var (
 )
 
 func ParseBookDetail(contents []byte, bookname string) engine.ParseResult {
-	bookdetail := model.Bookdetails{}
+	profile := model.Profile{}
 
-	bookdetail.Bookname = bookname
-	bookdetail.Author = ExtraString(contents, autherRe)
-	bookdetail.Press = ExtraString(contents, pressRe)
+	profile.Bookname = bookname
+	profile.Author = ExtraString(contents, autherRe)
+	profile.Press = ExtraString(contents, pressRe)
 	pages, err := strconv.Atoi(ExtraString(contents, pagesRe))
 	if err == nil {
-		bookdetail.Pages = pages
+		profile.Pages = pages
 	}
-	bookdetail.Price = ExtraString(contents, priceRe)
-	bookdetail.Score = ExtraString(contents, scoreRe)
-	bookdetail.Intro = ExtraString(contents, introRe)
+	profile.Price = ExtraString(contents, priceRe)
+	score, err := strconv.ParseFloat(ExtraString(contents, scoreRe), 64)
+	if err == nil {
+		profile.Score = score
+	}
+	profile.Intro = ExtraString(contents, introRe)
 
 	result := engine.ParseResult{
-		Items: []interface{}{bookdetail},
+		Items: []interface{}{profile},
 	}
 
 	return result
@@ -40,7 +44,8 @@ func ParseBookDetail(contents []byte, bookname string) engine.ParseResult {
 func ExtraString(contents []byte, re *regexp.Regexp) string {
 	matches := re.FindSubmatch(contents)
 	if len(matches) >= 2 {
-		return string(matches[1])
+		str := strings.Replace(string(matches[1]), " ", "", -1)
+		return strings.Replace(str, "\n", "", -1)
 	} else {
 		return ""
 	}
