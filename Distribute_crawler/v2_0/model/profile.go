@@ -1,6 +1,9 @@
 package model
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 type Profile struct {
 	Bookname string
@@ -12,7 +15,18 @@ type Profile struct {
 	Intro    string
 }
 
-func (b Profile) String() string {
-	return "\n书名：" + b.Bookname + "\n作者：" + b.Author + "\n出版社：" + b.Press + "\n页数：" +
-		strconv.Itoa(b.Pages) + "\n价格：" + b.Price + "\n评分：" + strconv.FormatFloat(b.Score, 'f', 1, 64) + "\n简介：" + b.Intro
+func (p Profile) String() string {
+	return "\n书名：" + p.Bookname + "\n作者：" + p.Author + "\n出版社：" + p.Press + "\n页数：" +
+		strconv.Itoa(p.Pages) + "\n价格：" + p.Price + "\n评分：" + strconv.FormatFloat(p.Score, 'f', 1, 64) + "\n简介：" + p.Intro
+}
+
+func FromJsonObj(o interface{}) (Profile, error) {
+	var profile Profile
+	s, err := json.Marshal(o)
+	if err != nil {
+		return profile, err
+	}
+
+	err = json.Unmarshal(s, &profile)
+	return profile, err
 }

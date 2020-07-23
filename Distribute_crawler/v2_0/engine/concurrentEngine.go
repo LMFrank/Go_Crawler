@@ -8,7 +8,7 @@ import (
 type ConcurrentEngine struct {
 	Schedular   Schedular
 	WorkerCount int
-	ItemChan    chan interface{}
+	ItemChan    chan Item
 }
 
 type Schedular interface {
@@ -31,6 +31,9 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 
 	for _, r := range seeds {
+		if isDuplicate(r.Url) {
+			continue
+		}
 		e.Schedular.Submit(r)
 	}
 
@@ -44,6 +47,9 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		}
 
 		for _, request := range result.Requests {
+			if isDuplicate(request.Url) {
+				continue
+			}
 			e.Schedular.Submit(request)
 		}
 	}
@@ -72,4 +78,14 @@ func worker(r Request) (ParseResult, error) {
 	}
 
 	return r.ParseFunc(body), nil
+}
+
+var visitedUrls = make(map[string]bool)
+
+func isDuplicate(url string) bool {
+	if visitedUrls[url] {
+		return true
+	}
+	visitedUrls[url] = true
+	return false
 }
