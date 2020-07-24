@@ -8,10 +8,15 @@ import (
 )
 
 func main() {
+	itemChan, err := persist.ItemSaver("douban")
+	if err != nil {
+		panic(err)
+	}
+
 	e := engine.ConcurrentEngine{
 		Schedular:   &schedular.QueuedSchedular{},
 		WorkerCount: 10,
-		ItemChan:    persist.ItemSaver(),
+		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
 		Url:       "https://book.douban.com",

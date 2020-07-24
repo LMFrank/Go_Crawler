@@ -25,11 +25,7 @@ func TestSave(t *testing.T) {
 		},
 	}
 
-	// Save expected item
-	err := save(expected)
-	if err != nil {
-		panic(err)
-	}
+	const index = "douban_test"
 
 	client, err := elastic.NewClient(
 		elastic.SetURL("http://192.168.148.130:9200/"),
@@ -39,9 +35,15 @@ func TestSave(t *testing.T) {
 		panic(err)
 	}
 
+	// Save expected item
+	err = save(client, index, expected)
+	if err != nil {
+		panic(err)
+	}
+
 	// Fetch saved item
 	resp, err := client.Get().
-		Index("douban").
+		Index(index).
 		Type(expected.Type).
 		Id(expected.Id).
 		Do(context.Background())
