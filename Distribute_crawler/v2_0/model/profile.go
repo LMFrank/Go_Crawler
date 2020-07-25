@@ -12,12 +12,12 @@ type Profile struct {
 	Pages    int
 	Price    string
 	Score    float64
-	Intro    string
+	ISBN     int
 }
 
 func (p Profile) String() string {
-	return "\n书名：" + p.Bookname + "\n作者：" + p.Author + "\n出版社：" + p.Press + "\n页数：" +
-		strconv.Itoa(p.Pages) + "\n价格：" + p.Price + "\n评分：" + strconv.FormatFloat(p.Score, 'f', 1, 64) + "\n简介：" + p.Intro
+	return "\n书名：" + p.Bookname + "\n作者：" + p.Author + "\n出版社：" + p.Press + "\n页数：" + strconv.Itoa(p.Pages) +
+		"\n价格：" + p.Price + "\n评分：" + strconv.FormatFloat(p.Score, 'f', 1, 64) + "\nISBN：" + strconv.Itoa(p.ISBN)
 }
 
 func FromJsonObj(o interface{}) (Profile, error) {

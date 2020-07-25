@@ -14,7 +14,7 @@ var (
 	pagesRe  = regexp.MustCompile(`<span class="pl">页数:</span> ([^<]+)<br/>`)
 	priceRe  = regexp.MustCompile(`<span class="pl">定价:</span>([^<]+)<br/>`)
 	scoreRe  = regexp.MustCompile(`<strong class="ll rating_num " property="v:average">([^<]+)</strong>`)
-	introRe  = regexp.MustCompile(`<div class="intro">[\d\D]*?<p>([^<]+)</p></div>`)
+	isbnRe   = regexp.MustCompile(`<span class="pl">ISBN:</span>([^<]+)<br/>`)
 	idUrlRe  = regexp.MustCompile(`https://book.douban.com/subject/([\d]+)/`)
 )
 
@@ -33,7 +33,10 @@ func ParseBookDetail(contents []byte, url string, bookname string) engine.ParseR
 	if err == nil {
 		profile.Score = score
 	}
-	profile.Intro = extraString(contents, introRe)
+	isbn, err := strconv.Atoi(replaceBlank(extraString(contents, isbnRe)))
+	if err == nil {
+		profile.ISBN = isbn
+	}
 
 	result := engine.ParseResult{
 		Items: []engine.Item{
