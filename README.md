@@ -29,5 +29,5 @@ Go_crawler_v2.0中的豆瓣网爬虫项目
 
 在本项目中重构了代码，加入了存储模块（ES），完善了框架
 
-具体请查看：[README](https://github.com/LMFrank/Go_Crawler/tree/master/zhenai_crawler)
+具体请查看：[README](https://github.com/LMFrank/Go_Crawler/tree/master/Distribute_crawler)
 
