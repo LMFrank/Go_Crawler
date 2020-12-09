@@ -4,9 +4,9 @@ import (
 	"context"
 	"crawler_v2.0/engine"
 	"errors"
+	"gopkg.in/olivere/elastic.v5"
 	"log"
 )
-import "gopkg.in/olivere/elastic.v5"
 
 func ItemSaver(index string) (chan engine.Item, error) {
 	client, err := elastic.NewClient(
@@ -24,7 +24,7 @@ func ItemSaver(index string) (chan engine.Item, error) {
 			log.Printf("item Saver: Got Item #%d: \n%v", itemCount, item)
 			itemCount++
 
-			err := save(client, index, item)
+			err := Save(client, index, item)
 			if err != nil {
 				log.Printf("Item Saver: error "+"saving item %v: %v", item, err)
 			}
@@ -34,7 +34,7 @@ func ItemSaver(index string) (chan engine.Item, error) {
 	return out, nil
 }
 
-func save(client *elastic.Client, index string, item engine.Item) (err error) {
+func Save(client *elastic.Client, index string, item engine.Item) error {
 	if item.Type == "" {
 		return errors.New("must supply Type")
 	}
@@ -47,7 +47,7 @@ func save(client *elastic.Client, index string, item engine.Item) (err error) {
 		indexService.Id(item.Id)
 	}
 
-	_, err = indexService.Do(context.Background())
+	_, err := indexService.Do(context.Background())
 
 	if err != nil {
 		return nil

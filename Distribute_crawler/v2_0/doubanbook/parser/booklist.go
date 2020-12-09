@@ -17,7 +17,7 @@ func ParseBooklist(contents []byte) engine.ParseResult {
 		url := string(m[1])
 		bookname := string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
-			Url: string(m[1]),
+			Url: url,
 			ParseFunc: func(c []byte) engine.ParseResult {
 				return ParseBookDetail(c, url, bookname)
 			},
