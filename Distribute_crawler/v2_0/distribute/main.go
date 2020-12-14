@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crawler_v2.0/distribute/config"
 	"crawler_v2.0/distribute/persist/client"
 	"crawler_v2.0/doubanbook/parser"
 	"crawler_v2.0/engine"
@@ -19,7 +20,7 @@ func main() {
 		ItemChan:    itemChan,
 	}
 	e.Run(engine.Request{
-		Url:       "https://book.douban.com",
-		ParseFunc: parser.ParseTag,
+		Url:    "https://book.douban.com",
+		Parser: engine.NewFuncParser(parser.ParseBookTag, config.ParseBookTag),
 	})
 }

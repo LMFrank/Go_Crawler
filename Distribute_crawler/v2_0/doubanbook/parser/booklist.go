@@ -7,20 +7,17 @@ import (
 
 const BooklistRe = `<a href="([^"]+)" title="([^"]+)"`
 
-func ParseBooklist(contents []byte) engine.ParseResult {
+func ParseBookList(contents []byte, _ string) engine.ParseResult {
 	re := regexp.MustCompile(BooklistRe)
 	matches := re.FindAllSubmatch(contents, -1)
 
 	result := engine.ParseResult{}
 
 	for _, m := range matches {
-		url := string(m[1])
 		bookname := string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
-			Url: url,
-			ParseFunc: func(c []byte) engine.ParseResult {
-				return ParseBookDetail(c, url, bookname)
-			},
+			Url:    string(m[1]),
+			Parser: NewBookDetailParser(bookname),
 		})
 	}
 

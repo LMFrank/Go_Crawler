@@ -18,7 +18,7 @@ var (
 	idUrlRe  = regexp.MustCompile(`https://book.douban.com/subject/([\d]+)/`)
 )
 
-func ParseBookDetail(contents []byte, url string, bookname string) engine.ParseResult {
+func parseBookDetail(contents []byte, url string, bookname string) engine.ParseResult {
 	profile := model.Profile{}
 
 	profile.Bookname = bookname
@@ -54,7 +54,7 @@ func ParseBookDetail(contents []byte, url string, bookname string) engine.ParseR
 
 func extraString(contents []byte, re *regexp.Regexp) string {
 	matches := re.FindSubmatch(contents)
-	if len(matches) >= 2 {
+	if matches != nil && len(matches) >= 2 {
 		return string(matches[1])
 	} else {
 		return ""
@@ -64,4 +64,22 @@ func extraString(contents []byte, re *regexp.Regexp) string {
 func replaceBlank(str string) string {
 	str = strings.Replace(str, " ", "", -1)
 	return strings.Replace(str, "\n", "", -1)
+}
+
+type BookDetailParser struct {
+	bookName string
+}
+
+func (b *BookDetailParser) Parse(contents []byte, url string) engine.ParseResult {
+	return parseBookDetail(contents, url, b.bookName)
+}
+
+func (b *BookDetailParser) Serialize() (name string, args interface{}) {
+	return "BookDetailParser", b.bookName
+}
+
+func NewBookDetailParser(name string) *BookDetailParser {
+	return &BookDetailParser{
+		bookName: name,
+	}
 }
