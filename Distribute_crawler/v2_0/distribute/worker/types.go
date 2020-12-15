@@ -56,7 +56,7 @@ func DeserializeRequest(r Request) (engine.Request, error) {
 	}, nil
 }
 
-func DeserializeResult(r ParseResult) (engine.ParseResult, error) {
+func DeserializeResult(r ParseResult) engine.ParseResult {
 	result := engine.ParseResult{
 		Items: r.Items,
 	}
@@ -68,7 +68,7 @@ func DeserializeResult(r ParseResult) (engine.ParseResult, error) {
 		}
 		result.Requests = append(result.Requests, engineReq)
 	}
-	return result, nil
+	return result
 }
 
 func deserializeParser(p SerializedParser) (engine.Parser, error) {
