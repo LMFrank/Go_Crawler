@@ -8,8 +8,8 @@ const (
 	NilParser       = "NilParser"
 
 	// Service port
-	ItemSaverPort = 1234
-	WorkerPort0   = 9000
+	// ItemSaverPort = 1234
+	// WorkerPort0   = 9000
 
 	//ElasticSearch
 	ElasticIndex = "douban_book"
@@ -17,4 +17,7 @@ const (
 	// RPC Endpoints
 	ItemSaverRpc    = "ItemSaverService.Save"
 	CrawlServiceRpc = "CrawlService.Process"
+
+	// Rate limiting
+	Qps = 20
 )

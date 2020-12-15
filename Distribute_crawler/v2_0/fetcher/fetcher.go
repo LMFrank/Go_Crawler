@@ -2,6 +2,7 @@ package fetcher
 
 import (
 	"bufio"
+	"crawler_v2.0/distribute/config"
 	"fmt"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
@@ -15,7 +16,7 @@ import (
 )
 
 // 100毫秒执行一次请求
-var rateLimiter = time.Tick(100 * time.Millisecond)
+var rateLimiter = time.Tick(time.Second / config.Qps)
 
 func Fetch(url string) ([]byte, error) {
 	<-rateLimiter
@@ -55,6 +56,8 @@ func ProxyFetch(weburl string) ([]byte, error) {
 	}
 	transport := &http.Transport{Proxy: proxy}
 	client := &http.Client{Transport: transport}
+
+	log.Printf("Fetching url %s", weburl)
 
 	req, err := http.NewRequest("GET", weburl, nil)
 	if err != nil {
